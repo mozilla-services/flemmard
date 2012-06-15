@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 
-install_requires = ['python-jenkins']
+install_requires = ['python-jenkins', 'jenkinsapi']
+
 
 with open("README.rst") as f:
     README = f.read()
