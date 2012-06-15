@@ -43,9 +43,15 @@ def build_job(client, args):
     print 'Build sent in the build queue'
 
 
+def list_artifacts(client, args):
+    artifacts = jenkinsapi.get_artifacts(args.url, args.job)
+    for name, art in artifacts.items():
+        print('%s - %s' % (name, art.url))
+
+
 def job_status(client, args):
     print('Getting some info about %r' % args.job)
-    info = client.get_job_info(args.job)
+    #info = client.get_job_info(args.job)
     latest = jenkinsapi.get_latest_build(args.url, args.job)
     when = float(latest.get_timestamp()) / 1000.
     when = datetime.fromtimestamp(when).strftime('%Y-%m-%d %H:%M:%S')
@@ -150,6 +156,10 @@ def main():
     parser_create.add_argument('--name', help='Name of the job', default=None)
     parser_create.add_argument('repository', help='Repository')
     parser_create.set_defaults(func=create_job)
+
+    parser_artifacts = subparsers.add_parser('artifacts', help='Lists the artifacts.')
+    parser_artifacts.add_argument('job', help='Job.')
+    parser_artifacts.set_defaults(func=list_artifacts)
 
     parser.add_argument('--url', dest='url',
                         default='http://hudson.build.mtv1.svc.mozilla.com/',
