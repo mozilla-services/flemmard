@@ -56,7 +56,8 @@ def job_status(client, args):
     when = float(latest.get_timestamp()) / 1000.
     when = datetime.fromtimestamp(when).strftime('%Y-%m-%d %H:%M:%S')
 
-    print('Latest job started at %s' % when)
+    print('Latest build started at %s' % when)
+    print('Build #%d' % latest.id())
     running = latest.is_running()
     if not running:
         status = latest.is_good()
