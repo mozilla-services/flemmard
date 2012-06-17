@@ -68,6 +68,7 @@ def job_status(client, args):
     else:
         print('Still running *now*...')
 
+
 def create_job(client, args):
     # before creating a job we want to validate the repo
     # structure
@@ -96,7 +97,6 @@ def create_job(client, args):
             'description': "Job created by Flemmard"}
     client.create_job(name, template % data)
     print('Job %r created.' % name)
-
 
 
 def _control_project(repository):
@@ -139,7 +139,8 @@ def _control_project(repository):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Drive Jenkins from your couch.')
+    parser = argparse.ArgumentParser(
+            description='Drive Jenkins from your couch.')
     subparsers = parser.add_subparsers(help='sub-command help')
 
     parser_list = subparsers.add_parser('list', help='List all jobs.')
@@ -158,7 +159,8 @@ def main():
     parser_create.add_argument('repository', help='Repository')
     parser_create.set_defaults(func=create_job)
 
-    parser_artifacts = subparsers.add_parser('artifacts', help='Lists the artifacts.')
+    parser_artifacts = subparsers.add_parser('artifacts',
+            help='Lists the artifacts.')
     parser_artifacts.add_argument('job', help='Job.')
     parser_artifacts.set_defaults(func=list_artifacts)
 
