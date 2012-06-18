@@ -1,3 +1,4 @@
+from ConfigParser import ConfigParser
 import re
 import shutil
 import os
@@ -142,37 +143,47 @@ def _control_project(repository):
 
 
 def main():
+    url = {'default': 'http://hudson.build.mtv1.svc.mozilla.com/',
+           'help': "Jenkins Root URL"}
+
+    rcfile = os.path.expanduser(os.path.join('~', '.flemmardrc'))
+    if os.path.exists(rcfile):
+        cfg = ConfigParser()
+        cfg.read(rcfile)
+        url['default'] = cfg.get('flemmard', 'url')
+
     parser = argparse.ArgumentParser(
             description='Drive Jenkins from your couch.')
     subparsers = parser.add_subparsers(help='sub-command help')
 
     parser_list = subparsers.add_parser('list', help='Lists all jobs.')
+    parser_list.add_argument('--url', **url)
     parser_list.set_defaults(func=list_jobs)
 
     parser_status = subparsers.add_parser('status', help='Gives a job status.')
+    parser_status.add_argument('--url', **url)
     parser_status.add_argument('job', help='Job to build.')
     parser_status.set_defaults(func=job_status)
 
     parser_build = subparsers.add_parser('build', help='Builds a job.')
+    parser_build.add_argument('--url',**url)
     parser_build.add_argument('job', help='Job to build.')
     parser_build.set_defaults(func=build_job)
 
     parser_create = subparsers.add_parser('create', help='Creates a new job.')
     parser_create.add_argument('--name', help='Name of the job', default=None)
     parser_create.add_argument('--template', help='XML template', default=None)
+    parser_create.add_argument('--url', **url)
     parser_create.add_argument('repository', help='Repository')
     parser_create.set_defaults(func=create_job)
 
     parser_artifacts = subparsers.add_parser('artifacts',
-            help='Lists the artifacts.')
+                                             help='Lists the artifacts.')
+    parser_artifacts.add_argument('--url', **url)
     parser_artifacts.add_argument('job', help='Job.')
     parser_artifacts.set_defaults(func=list_artifacts)
 
-    parser.add_argument('--url', dest='url',
-                        default='http://hudson.build.mtv1.svc.mozilla.com/',
-                        help="Jenkins Root URL")
     args = parser.parse_args()
-
     client = jenkins.Jenkins(args.url)
     args.func(client, args)
 
