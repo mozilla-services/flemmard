@@ -1,7 +1,7 @@
 Flemmard
 --------
 
-Flemmard let you drive a Mozilla Services Jenkins server from the command line.
+Flemmard let you drive a Jenkins server from the command line.
 
 The console script will let you:
 
