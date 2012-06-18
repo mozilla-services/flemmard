@@ -150,10 +150,10 @@ def main():
     url = {'default': 'http://hudson.build.mtv1.svc.mozilla.com/',
            'help': "Jenkins Root URL"}
     pre_hook = 'flemmard.check_repo'
-    rcfile = os.path.expanduser(os.path.join('~', '.flemmardrc'))
-    if os.path.exists(rcfile):
-        cfg = ConfigParser()
-        cfg.read(rcfile)
+    rcfiles = ['.flemmardrc',
+               os.path.expanduser(os.path.join('~', '.flemmardrc'))]
+    cfg = ConfigParser()
+    if cfg.read(rcfiles):
         try:
             url['default'] = cfg.get('flemmard', 'url')
         except NoOptionError:
