@@ -25,7 +25,7 @@ def _color2status(color):
     return color.upper()
 
 
-actions = ['list', 'build', 'create']
+actions = ['list', 'build', 'create', 'status', 'artifacts']
 
 
 def list_jobs(client, args):
@@ -80,8 +80,11 @@ def create_job(client, args):
         print('YOU FAIL')
         sys.exit(0)
 
-    #
-    template = os.path.join(os.path.dirname(__file__), 'job_tmpl.xml')
+    if args.template is not None:
+        template = args.template
+    else:
+        template = os.path.join(os.path.dirname(__file__), 'job_tmpl.xml')
+
     with open(template) as f:
         template = f.read()
 
@@ -143,19 +146,20 @@ def main():
             description='Drive Jenkins from your couch.')
     subparsers = parser.add_subparsers(help='sub-command help')
 
-    parser_list = subparsers.add_parser('list', help='List all jobs.')
+    parser_list = subparsers.add_parser('list', help='Lists all jobs.')
     parser_list.set_defaults(func=list_jobs)
 
-    parser_status = subparsers.add_parser('status', help='Gives a job status')
+    parser_status = subparsers.add_parser('status', help='Gives a job status.')
     parser_status.add_argument('job', help='Job to build.')
     parser_status.set_defaults(func=job_status)
 
-    parser_build = subparsers.add_parser('build', help='Build a job.')
+    parser_build = subparsers.add_parser('build', help='Builds a job.')
     parser_build.add_argument('job', help='Job to build.')
     parser_build.set_defaults(func=build_job)
 
-    parser_create = subparsers.add_parser('create', help='Create a new Job')
+    parser_create = subparsers.add_parser('create', help='Creates a new job.')
     parser_create.add_argument('--name', help='Name of the job', default=None)
+    parser_create.add_argument('--template', help='XML template', default=None)
     parser_create.add_argument('repository', help='Repository')
     parser_create.set_defaults(func=create_job)
 

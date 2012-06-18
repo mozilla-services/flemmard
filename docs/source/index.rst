@@ -29,7 +29,40 @@ Make sur you have `pip <http://pip-installer.org>`_ installed, then ::
 Usage
 -----
 
+Flemmard provides a command-line script called ... **flemmard** that comes
+with 5 actions:
+
+- **list** -- Lists all jobs.
+- **status** -- Gives a job status
+- **build** -- Build a job.
+- **create** -- Create a new Job
+- **artifacts** -- Lists the artifacts.
+
+list
+::::
+
 XXX
+
+status
+::::::
+
+XXX
+
+build
+:::::
+
+XXX
+
+create
+::::::
+
+XXX
+
+artifacts
+:::::::::
+
+XXX
+
 
 
 Useful links
