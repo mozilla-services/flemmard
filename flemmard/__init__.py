@@ -78,7 +78,7 @@ def create_job(client, args):
 
 
     pre_hook = args.pre_hook
-    if pre_hook is not None:
+    if pre_hook is not None and not args.no_check:
         pre_hook = resolve_name(pre_hook)
         valid, msg = pre_hook(repo)
         if not valid:
@@ -185,6 +185,8 @@ def main():
     parser_create.add_argument('--name', help='Name of the job', default=None)
     parser_create.add_argument('--template', help='XML template', default=None)
     parser_create.add_argument('--pre-hook', help='pre-hook', default=pre_hook)
+    parser_create.add_argument('--no-check', help='Bypass the check',
+                               default=False, action='store_true')
     parser_create.add_argument('--url', **url)
     parser_create.add_argument('repository', help='Repository')
     parser_create.set_defaults(func=create_job)
