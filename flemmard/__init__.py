@@ -10,7 +10,7 @@ from datetime import datetime
 from jenkinsapi import api as jenkinsapi
 import jenkins
 
-from flemmard.util import run
+from flemmard.util import run, resolve_name
 
 
 MANDATORY_TARGETS = ('build', 'test', 'build_rpms')
@@ -75,11 +75,16 @@ def create_job(client, args):
     # structure
     print('Checking the project')
     repo = args.repository
-    valid, msg = _control_project(repo)
-    if not valid:
-        print(msg)
-        print('YOU FAIL')
-        sys.exit(0)
+
+
+    pre_hook = args.pre_hook
+    if pre_hook is not None:
+        pre_hook = resolve_name(pre_hook)
+        valid, msg = pre_hook(repo)
+        if not valid:
+            print(msg)
+            print('YOU FAIL')
+            sys.exit(0)
 
     if args.template is not None:
         template = args.template
@@ -103,8 +108,7 @@ def create_job(client, args):
     print('Job %r created.' % name)
 
 
-def _control_project(repository):
-
+def check_repo(repository):
     temp_dir = tempfile.mkdtemp()
     old_wdir = os.getcwd()
     try:
@@ -151,6 +155,9 @@ def main():
         cfg = ConfigParser()
         cfg.read(rcfile)
         url['default'] = cfg.get('flemmard', 'url')
+        pre_hook = cfg.get('flemmard', 'create-pre-hook')
+    else:
+        pre_hook = 'flemmard.check_repo'
 
     parser = argparse.ArgumentParser(
             description='Drive Jenkins from your couch.')
@@ -173,6 +180,7 @@ def main():
     parser_create = subparsers.add_parser('create', help='Creates a new job.')
     parser_create.add_argument('--name', help='Name of the job', default=None)
     parser_create.add_argument('--template', help='XML template', default=None)
+    parser_create.add_argument('--pre-hook', help='pre-hook', default=pre_hook)
     parser_create.add_argument('--url', **url)
     parser_create.add_argument('repository', help='Repository')
     parser_create.set_defaults(func=create_job)
