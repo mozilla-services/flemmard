@@ -64,6 +64,7 @@
     <hudson.tasks.Shell>
       <command>make build
 make test
+make build_rpms
 </command>
     </hudson.tasks.Shell>
   </builders>
