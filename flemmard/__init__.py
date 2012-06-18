@@ -12,6 +12,8 @@ import jenkins
 
 from flemmard.util import run, resolve_name
 
+import pdb
+sys.excepthook = lambda x,y,z: pdb.pm()
 
 MANDATORY_TARGETS = ('build', 'test', 'build_rpms')
 
@@ -150,6 +152,9 @@ def main():
     url = {'default': 'http://hudson.build.mtv1.svc.mozilla.com/',
            'help': "Jenkins Root URL"}
     pre_hook = 'flemmard.check_repo'
+    username = {'default': None, 'help': 'Username'}
+    password = {'default': None, 'help': 'Password or API token'}
+
     rcfiles = ['.flemmardrc',
                os.path.expanduser(os.path.join('~', '.flemmardrc'))]
     cfg = ConfigParser()
@@ -158,6 +163,17 @@ def main():
             url['default'] = cfg.get('flemmard', 'url')
         except NoOptionError:
             pass
+
+        try:
+            username['default'] = cfg.get('flemmard', 'username')
+        except NoOptionError:
+            pass
+
+        try:
+            password['default'] = cfg.get('flemmard', 'password')
+        except NoOptionError:
+            pass
+
         try:
             pre_hook = cfg.get('flemmard', 'create-pre-hook')
         except NoOptionError:
@@ -169,15 +185,21 @@ def main():
 
     parser_list = subparsers.add_parser('list', help='Lists all jobs.')
     parser_list.add_argument('--url', **url)
+    parser_list.add_argument('--username', **username)
+    parser_list.add_argument('--password', **password)
     parser_list.set_defaults(func=list_jobs)
 
     parser_status = subparsers.add_parser('status', help='Gives a job status.')
     parser_status.add_argument('--url', **url)
+    parser_status.add_argument('--username', **username)
+    parser_status.add_argument('--password', **password)
     parser_status.add_argument('job', help='Job to build.')
     parser_status.set_defaults(func=job_status)
 
     parser_build = subparsers.add_parser('build', help='Builds a job.')
     parser_build.add_argument('--url',**url)
+    parser_build.add_argument('--username', **username)
+    parser_build.add_argument('--password', **password)
     parser_build.add_argument('job', help='Job to build.')
     parser_build.set_defaults(func=build_job)
 
@@ -188,17 +210,21 @@ def main():
     parser_create.add_argument('--no-check', help='Bypass the check',
                                default=False, action='store_true')
     parser_create.add_argument('--url', **url)
+    parser_create.add_argument('--username', **username)
+    parser_create.add_argument('--password', **password)
     parser_create.add_argument('repository', help='Repository')
     parser_create.set_defaults(func=create_job)
 
     parser_artifacts = subparsers.add_parser('artifacts',
                                              help='Lists the artifacts.')
     parser_artifacts.add_argument('--url', **url)
+    parser_artifacts.add_argument('--username', **username)
+    parser_artifacts.add_argument('--password', **password)
     parser_artifacts.add_argument('job', help='Job.')
     parser_artifacts.set_defaults(func=list_artifacts)
 
     args = parser.parse_args()
-    client = jenkins.Jenkins(args.url)
+    client = jenkins.Jenkins(args.url, args.username, args.password)
     args.func(client, args)
 
 
