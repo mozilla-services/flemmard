@@ -1,4 +1,4 @@
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoOptionError
 import re
 import shutil
 import os
@@ -149,15 +149,19 @@ def check_repo(repository):
 def main():
     url = {'default': 'http://hudson.build.mtv1.svc.mozilla.com/',
            'help': "Jenkins Root URL"}
-
+    pre_hook = 'flemmard.check_repo'
     rcfile = os.path.expanduser(os.path.join('~', '.flemmardrc'))
     if os.path.exists(rcfile):
         cfg = ConfigParser()
         cfg.read(rcfile)
-        url['default'] = cfg.get('flemmard', 'url')
-        pre_hook = cfg.get('flemmard', 'create-pre-hook')
-    else:
-        pre_hook = 'flemmard.check_repo'
+        try:
+            url['default'] = cfg.get('flemmard', 'url')
+        except NoOptionError:
+            pass
+        try:
+            pre_hook = cfg.get('flemmard', 'create-pre-hook')
+        except NoOptionError:
+            pass
 
     parser = argparse.ArgumentParser(
             description='Drive Jenkins from your couch.')
