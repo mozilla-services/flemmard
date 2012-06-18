@@ -17,6 +17,15 @@ The script let you:
 - list jobs and their status
 
 
+Installation
+------------
+
+Make sur you have `pip <http://pip-installer.org>`_ installed, then ::
+
+
+    $ pip install flemmard
+
+
 Usage
 -----
 
@@ -27,6 +36,6 @@ Useful links
 ------------
 
 
-- Repository : https://github.com/tarekziade/flemmard.png
+- Repository : https://github.com/mozilla-services/flemmard
 
 
