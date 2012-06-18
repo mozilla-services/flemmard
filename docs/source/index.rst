@@ -48,31 +48,6 @@ add a *.flemmardrc* file into your home directory to set up a default value::
 Using *--url* explicitely will override any value found in *.flemmardrc*.
 
 
-list
-::::
-
-XXX
-
-status
-::::::
-
-XXX
-
-build
-:::::
-
-XXX
-
-create
-::::::
-
-XXX
-
-artifacts
-:::::::::
-
-XXX
-
 
 
 Useful links
