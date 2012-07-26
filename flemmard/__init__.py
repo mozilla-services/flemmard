@@ -6,14 +6,18 @@ import argparse
 import sys
 import tempfile
 from datetime import datetime
+from StringIO import StringIO
 
 from jenkinsapi import api as jenkinsapi
 import jenkins
 
 from flemmard.util import run, resolve_name
+from fabric.api import run as fabrun
+from fabric.api import env
 
-import pdb
-sys.excepthook = lambda x,y,z: pdb.pm()
+
+#import pdb
+#sys.excepthook = lambda x,y,z: pdb.pm()
 
 MANDATORY_TARGETS = ('build', 'test', 'build_rpms')
 
@@ -28,7 +32,7 @@ def _color2status(color):
     return color.upper()
 
 
-actions = ['list', 'build', 'create', 'status', 'artifacts']
+actions = ['list', 'build', 'create', 'status', 'artifacts', 'versions']
 
 
 def list_jobs(client, args):
@@ -50,6 +54,29 @@ def list_artifacts(client, args):
     artifacts = jenkinsapi.get_artifacts(args.url, args.job)
     for name, art in artifacts.items():
         print('%s - %s' % (name, art.url))
+
+
+def check_status(arg):
+    host = arg.host
+    env.hosts = [host]
+    env.host_string = host
+    sys.stdout.write("Checking server...")
+    sys.stdout.flush()
+
+    def _check_status():
+        oldout = sys.stdout
+        sys.stdout = StringIO()
+        try:
+            output = fabrun('pip freeze')
+        finally:
+            sys.stdout = oldout
+
+        sys.stdout.write('installed:\n\n')
+        for package in output.split('\n'):
+            print('  * ' + package)
+
+    _check_status()
+    return 0
 
 
 def job_status(client, args):
@@ -223,10 +250,19 @@ def main():
     parser_artifacts.add_argument('job', help='Job.')
     parser_artifacts.set_defaults(func=list_artifacts)
 
+    parser_status = subparsers.add_parser('check',
+                                             help='Gives a status of a server')
+    parser_status.add_argument('host', help='Host to check')
+    parser_status.set_defaults(func=check_status)
+
     args = parser.parse_args()
-    client = jenkins.Jenkins(args.url, args.username, args.password)
-    args.func(client, args)
+
+    if args.func in (check_status,):
+        return args.func(args)
+    else:
+        client = jenkins.Jenkins(args.url, args.username, args.password)
+        return args.func(client, args)
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

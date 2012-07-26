@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ['python-jenkins', 'jenkinsapi']
+install_requires = ['python-jenkins', 'jenkinsapi', 'fabric']
 
 
 with open("README.rst") as f:
