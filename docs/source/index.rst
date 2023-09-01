@@ -17,15 +17,6 @@ The script let you:
 - list jobs and their status
 
 
-Installation
-------------
-
-Make sur you have `pip <http://pip-installer.org>`_ installed, then ::
-
-
-    $ pip install flemmard
-
-
 Usage
 -----
 
